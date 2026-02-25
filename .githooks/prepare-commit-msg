@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+msg_file="$1"
+
+coauthor='Co-authored-by: codex <noreply@openai.com>'
+
+if ! grep -qF "$coauthor" "$msg_file"; then
+  {
+    echo
+    echo "$coauthor"
+  } >> "$msg_file"
+fi
