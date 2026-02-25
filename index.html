@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Codex Toy: Orbital Garden</title>
+    <style>
+      :root {
+        --ink: #1b1e23;
+        --paper: #f7f4ef;
+        --accent: #ff6f3d;
+        --accent-2: #18a999;
+        --accent-3: #3b5bdb;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: "Fraunces", "Iowan Old Style", "Palatino", "Times New Roman", serif;
+        color: var(--ink);
+        background: radial-gradient(circle at 10% 15%, #ffe9c9 0%, transparent 50%),
+          radial-gradient(circle at 90% 10%, #d2f7ff 0%, transparent 55%),
+          radial-gradient(circle at 50% 90%, #efe3ff 0%, transparent 60%),
+          var(--paper);
+        display: grid;
+        place-items: center;
+      }
+
+      .frame {
+        width: min(900px, 92vw);
+        background: #ffffffcc;
+        border: 1px solid #d7d2c7;
+        border-radius: 24px;
+        padding: clamp(20px, 4vw, 36px);
+        box-shadow: 0 22px 50px rgba(18, 25, 38, 0.18);
+        backdrop-filter: blur(8px);
+      }
+
+      header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(1.6rem, 3vw, 2.5rem);
+        letter-spacing: -0.02em;
+      }
+
+      .subtitle {
+        font-size: 0.95rem;
+        max-width: 40ch;
+        margin-top: 6px;
+        color: #404553;
+      }
+
+      .controls {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+
+      button {
+        border: none;
+        padding: 10px 16px;
+        border-radius: 999px;
+        font-size: 0.95rem;
+        background: var(--ink);
+        color: #fff;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 12px 20px rgba(27, 30, 35, 0.2);
+      }
+
+      .canvas {
+        margin-top: 28px;
+        border-radius: 18px;
+        background: linear-gradient(140deg, rgba(255, 255, 255, 0.9), rgba(237, 243, 255, 0.9));
+        border: 1px solid #e2dece;
+        padding: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 18px;
+      }
+
+      .orb {
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #fff, rgba(255, 255, 255, 0.2)),
+          linear-gradient(135deg, var(--accent), var(--accent-2));
+        overflow: hidden;
+        display: grid;
+        place-items: center;
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .orb:nth-child(2) {
+        background: radial-gradient(circle at 35% 30%, #fff, rgba(255, 255, 255, 0.2)),
+          linear-gradient(135deg, var(--accent-2), var(--accent-3));
+        animation-delay: -2s;
+      }
+
+      .orb:nth-child(3) {
+        background: radial-gradient(circle at 35% 30%, #fff, rgba(255, 255, 255, 0.2)),
+          linear-gradient(135deg, var(--accent-3), var(--accent));
+        animation-delay: -4s;
+      }
+
+      .orb span {
+        font-size: 1.1rem;
+        text-align: center;
+        padding: 12px;
+        color: #0f172a;
+        font-weight: 600;
+      }
+
+      .ring {
+        position: absolute;
+        inset: 12%;
+        border-radius: 50%;
+        border: 2px dashed rgba(255, 255, 255, 0.6);
+        animation: spin 12s linear infinite;
+      }
+
+      .ring::after {
+        content: "";
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #fff;
+        top: -6px;
+        left: calc(50% - 6px);
+        box-shadow: 0 0 12px rgba(255, 255, 255, 0.8);
+      }
+
+      .metrics {
+        margin-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        font-size: 0.9rem;
+        color: #434957;
+      }
+
+      .metric {
+        background: #f1eee8;
+        padding: 8px 12px;
+        border-radius: 12px;
+        border: 1px solid #e4dfd3;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0px);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes spin {
+        from {
+          transform: rotate(0deg);
+        }
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      @media (max-width: 600px) {
+        .controls {
+          width: 100%;
+          justify-content: flex-start;
+        }
+        button {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="frame">
+      <header>
+        <div>
+          <h1>Orbital Garden</h1>
+          <div class="subtitle">
+            A tiny generative toy: click to reshuffle the orbits, colors, and vibes.
+          </div>
+        </div>
+        <div class="controls">
+          <button id="shuffle">Reshuffle</button>
+        </div>
+      </header>
+
+      <section class="canvas" id="canvas">
+        <div class="orb"><div class="ring"></div><span>Quiet spark</span></div>
+        <div class="orb"><div class="ring"></div><span>Soft orbit</span></div>
+        <div class="orb"><div class="ring"></div><span>Wild bloom</span></div>
+      </section>
+
+      <section class="metrics" id="metrics">
+        <div class="metric">Tempo: <strong id="tempo">6.0s</strong></div>
+        <div class="metric">Palette: <strong id="palette">Sunset Mint</strong></div>
+        <div class="metric">Drift: <strong id="drift">10px</strong></div>
+      </section>
+    </main>
+
+    <script>
+      const palettes = [
+        {
+          name: "Sunset Mint",
+          colors: ["#ff6f3d", "#18a999", "#3b5bdb"],
+        },
+        {
+          name: "Citrus Ice",
+          colors: ["#ffb703", "#00b4d8", "#8338ec"],
+        },
+        {
+          name: "Bloom Night",
+          colors: ["#ff4d6d", "#00bbf9", "#2ec4b6"],
+        },
+        {
+          name: "Forest Glow",
+          colors: ["#606c38", "#283618", "#dda15e"],
+        },
+      ];
+
+      const vibes = [
+        "Quiet spark",
+        "Soft orbit",
+        "Wild bloom",
+        "Golden hush",
+        "Liquid sky",
+        "Slow thunder",
+        "Neon moss",
+        "Warm drift",
+      ];
+
+      const canvas = document.getElementById("canvas");
+      const tempoLabel = document.getElementById("tempo");
+      const paletteLabel = document.getElementById("palette");
+      const driftLabel = document.getElementById("drift");
+      const shuffleButton = document.getElementById("shuffle");
+
+      function randomChoice(list) {
+        return list[Math.floor(Math.random() * list.length)];
+      }
+
+      function reshuffle() {
+        const tempo = (Math.random() * 4 + 4).toFixed(1);
+        const drift = Math.floor(Math.random() * 14 + 6);
+        const palette = randomChoice(palettes);
+
+        document.documentElement.style.setProperty("--accent", palette.colors[0]);
+        document.documentElement.style.setProperty("--accent-2", palette.colors[1]);
+        document.documentElement.style.setProperty("--accent-3", palette.colors[2]);
+
+        tempoLabel.textContent = `${tempo}s`;
+        paletteLabel.textContent = palette.name;
+        driftLabel.textContent = `${drift}px`;
+
+        canvas.querySelectorAll(".orb").forEach((orb, index) => {
+          orb.style.animationDuration = `${tempo}s`;
+          orb.style.animationDelay = `${-index * (tempo / 3)}s`;
+          orb.style.transform = `translateY(${Math.random() * drift - drift / 2}px)`;
+          const label = orb.querySelector("span");
+          label.textContent = randomChoice(vibes);
+        });
+      }
+
+      shuffleButton.addEventListener("click", reshuffle);
+      reshuffle();
+    </script>
+  </body>
+</html>
